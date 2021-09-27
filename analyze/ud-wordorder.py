@@ -1,3 +1,4 @@
+############ This script prints out comma-separated spreadsheet(s) (report-language.csv) with the ratio of word order pairs in conllu files ########
 #!/usr/bin/env python3
 import sys
 import subprocess
@@ -10,15 +11,8 @@ import unicodedata
 import collections
 import csv
 import string
-import nltk.data
-import spacy
-import spacy_udpipe
-import nltk
 import pyconll
 import pyconll.util
-
-
-
 
 try:
     import argparse
@@ -45,7 +39,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
-USAGE = './ud-wordorder.py <source_directory> <metadata_directory> <target_directory> [-h] \n [--analyze UD_SYN_REL]'
+USAGE = './ud-wordorder.py <source_directory> <target_directory> [-h] \n [--analyze UD_SYN_REL]'
 
 def build_parser():
 
@@ -53,7 +47,7 @@ def build_parser():
 
 
     parser.add_argument('source',help='Source for conllu files, must be dir/dir/dir')
-    parser.add_argument('target',help='Target destination for output files')
+    parser.add_argument('target',help='Target destination for csv files')
     parser.add_argument('-a', '--analyze', nargs='*', help=' Extract word-order pairs frequency: specify UD syntactic relation')
 
     return parser
@@ -63,16 +57,7 @@ def check_args(args):
     '''Exit if required arguments not specified'''
     check_flags = {}
 
-import unicodedata, re
-all_chars = (unichr(i) for i in range(0x110000))
-control_chars = ''.join(map(chr, list(range(0,32)) + list(range(127,160))))
-control_char_re = re.compile('[%s]' % re.escape(control_chars))
-
-def sanitize(s):
-    return unicodedata.normalize('NFC', control_char_re.sub(' ', s))
-
 def udanalyzer(conllufile,countwriter):
-    metafile = os.path.abspath(conllufile).replace('conllu','metadata')
     conllu = pyconll.load_from_file(conllufile)
     for sentence in conllu:
         left = {}
