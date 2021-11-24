@@ -25,7 +25,7 @@ for file in CIEP_humanref/conllu/$LANG/*.conllu; do python3 tools/conllu2vrt.py 
 #OPTIONAL: annotate for surprisal
 #cat all in single file and delete in-between XML headings:
 cat *.vrt > ciep_russian.vrt
-#run the surprisal script on 134.96.90.14
+#run the surprisal script
 /data/resources/Corpora/bin/genzelcharniak-vrt_v0.2.1_forCIEP.pl --nocross ciep_russian.vrt ciep_russian_srp.vrt
 
 #encode into cwb (without surprisal)
