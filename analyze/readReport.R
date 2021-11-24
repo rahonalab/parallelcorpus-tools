@@ -48,7 +48,7 @@ adposition[[language]] <- adp[which(adp$adp == "1"),]$lemma
 
 df <- setNames(data.frame(matrix(ncol = 56, nrow = 0)), c("language", "source", "no_sent", "dependency", "raw_modx", "raw_xmod", "raw_frequency", "raw_entropy", "hraw_mpos_modx", "hraw_mpos_xmod", "hraw_mpos_frequency", "hraw_mpos_entropy", "hpos_mraw_modx", "hpos_mraw_xmod", "hpos_mraw_frequency", "hpos_mraw_entropy","hpos_mpos_modx", "hpos_mpos_xmod", "hpos_mpos_frequency", "hpos_mpos_entropy","art_hraw_mlemma_modx", "art_hraw_mlemma_xmod", "art_hraw_mlemma_frequency", "art_hraw_mlemma_entropy", "art_hpos_mlemma_modx",	"art_hpos_mlemma_xmod", "art_hpos_mlemma_frequency", "art_hpos_mlemma_entropy", "art_hpos_mposlemma_modx", "art_hpos_mposlemma_xmod", "art_hpos_mposlemma_frequency", "art_hpos_mposlemma_entropy", "dem_hraw_mlemma_modx", "dem_hraw_mlemma_xmod", "dem_hraw_mlemma_frequency", "dem_hraw_mlemma_entropy", "dem_hpos_mlemma_modx",	"dem_hpos_mlemma_xmod", "dem_hpos_mlemma_frequency", "dem_hpos_mlemma_entropy", "dem_hpos_mposlemma_modx", "dem_hpos_mposlemma_xmod", "dem_hpos_mposlemma_frequency", "dem_hpos_mposlemma_entropy", "case_hraw_mlemma_modx", "case_hraw_mlemma_xmod", "case_hraw_mlemma_frequency", "case_hraw_mlemma_entropy", "case_hpos_mlemma_modx",	"case_hpos_mlemma_xmod", "case_hpos_mlemma_frequency", "case_hpos_mlemma_entropy", "case_hpos_mposlemma_modx", "case_hpos_mposlemma_xmod", "case_hpos_mposlemma_frequency", "case_hpos_mposlemma_entropy"))
 
-setwd("~/Desktop/linguistics/saarbruecken/parallelcorpusbuilding/output/bertinoro/")
+setwd("~/Desktop/linguistics/saarbruecken/parallelcorpusbuilding/output/new_paper1-bertinoro")
 
 for (dep in dependencies) {
 	xmod = paste("X", dep, sep="-")
