@@ -81,7 +81,7 @@ def main():
     metadata.write(">")
     metadata.close()
     '''Clean up nasty characters'''
-    output=sanitize(re.sub(r'(?m)^\@.*\n?',' ',file_content.replace('’', '\'').replace('‘', '\'')).replace('…',' ... ').replace('«',' " ').replace('»',' " ').replace('<BLOCK>',' '))
+    output=sanitize(re.sub(r'(?m)^\@.*\n?',' ',file_content.replace('’', '\'').replace('‘', '\'')).replace('…',' ... ').replace('«',' " ').replace('»',' " ').replace('<BLOCK>',' ').replace('“',' ').replace('„',' '))
     print(output)
 
 def check_args(args):
