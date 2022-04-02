@@ -51,7 +51,6 @@ def build_parser():
     parser.add_argument('-s', '--source', required=True, help='Source for raw texts, must be dir/dir/dir')
     parser.add_argument('-t', '--target', required=True, help='Target destination for processed texts')
     parser.add_argument('-l', '--model', required=True, help='Specify language model e.g., en for English, zh for Chinese')
-    parser.add_argument('-c', '--corpus', required=True, help='corpus is ciep?')
 
     return parser
 
@@ -81,7 +80,7 @@ def preparetext(file_content):
 
 def preparenlp(model):
     try: 
-        nlp = stanza.Pipeline(lang=model, processors='tokenize,pos,lemma')
+        nlp = stanza.Pipeline(lang=model, processors='tokenize,pos,lemma',logging_level='DEBUG')
         return nlp
     except:
         print(model+" not found. I'll try to download it...")
@@ -98,15 +97,7 @@ def preparenlp(model):
 
 
 def udparser(nlp,text,vrtfile):
-    doc = nlp(text)
-    for i, sentence in enumerate(doc.sentences):
-        vrtfile.write("<s>"+"\n")
-        #vrtfile.write("# sent_id = "+metadata['title']+"-s"+str(i+1)+"\n")        
-        #vrtfile.write("# text = "+sentence.text+"\n")
-        for word in sentence.words:
-            vrtfile.write(word.text+"\t"+word.lemma+"\t"+word.pos)
-            vrtfile.write("\n")
-        vrtfile.write("</s>"+"\n")
+        return
 
 def main():
     global debug
@@ -130,27 +121,23 @@ def main():
     '''Try to load the model into the parser'''
     nlp = preparenlp(ud)
     for filename in sorted(glob.glob(args.source+'/*.txt')):
-        file_content = open(filename, encoding='utf-8').read()
         print("Reading: "+filename)
         vrtfile= open(args.target+Path(filename).stem+".vrt","a+",encoding='utf-8')
-        if args.corpus == "CIEP":
-            '''Extract metadata - valid for CIEP only'''
-            header = re.findall(r'^@.*',file_content)
-            '''Format and print header'''
-            for feature in header:
-                if feature != '@endheader':
-                    value = feature.split('=')
-                    metafile.write(re.sub('^@','',value[0])+"=\""+value[1]+"\" ")
-                    metafile.write(">")
-                    metafile.close()
-            text=preparetext(file_content)
-        else:
-            lang=Path(filename).stem.split("_")[1]
-            title=Path(filename).stem.split("_")[0]
-            vrtfile.write("<text id=\""+title+"\" ")
-            vrtfile.write("origtitle=\""+title+"\" language=\""+lang+"\" >\n")
-            print("Starting parser...")
-            udparser(nlp,file_content,vrtfile)
+        year=Path(filename).stem.split("_")[1]
+        lang=Path(filename).stem.split("_")[2]
+        title=Path(filename).stem.split("_")[0]
+        vrtfile.write("<text id=\""+title+"_"+year+"\" ")
+        vrtfile.write("year=\""+year+"\" language=\""+lang+"\" >\n")
+        print("Starting parser...")
+        with open(filename, 'r', encoding='utf-8') as txt:
+            for line in txt.readlines():
+                print(line)
+                doc = nlp(line)
+                for sent in doc.sentences:
+                    vrtfile.write("<s>\n")
+                    for token in sent.words:
+                        vrtfile.write(token.text+"\t"+token.lemma+"\t"+token.upos+"\n")
+                    vrtfile.write("</s>\n")
             vrtfile.write("</text>")
             vrtfile.close()
     print("--- %s seconds ---" % (time.time() - start_time))

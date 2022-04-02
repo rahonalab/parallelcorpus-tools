@@ -44,8 +44,8 @@ def build_parser():
 
     return parser
 
-def main():
 
+def main():
     global debug
 
     parser = build_parser()
@@ -61,7 +61,6 @@ def main():
     '''Beginning of file'''
     vrtfile= open(args.vrt+Path(args.conllu).stem+".vrt","w+")
     print("Processing "+args.conllu)
-    vrtfile.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
     if args.metadata:
         '''Load metadata'''
         metadata= open(args.metadata+Path(args.conllu).stem+".metadata").read()
@@ -76,22 +75,32 @@ def main():
             import csv
             from collections import defaultdict
             columns = defaultdict(list) # each value in each column is appended to a list 
-            reader = csv.DictReader(csvfile,delimiter="\t")
+            reader = csv.DictReader(csvfile,delimiter="\t",skipinitialspace=False)
             for row in reader: # read a row as {column1: value1, column2: value2,...}
                 for (k,v) in row.items(): # go over each column name and value 
                     columns[k].append(v) # append the value into the appropriate list
-            propn = set(k.lower() for k in columns['propn']) 
+            columns['propn'] = [x.strip(' ') for x in columns['propn']]
+            propn = set(k.lower() for k in columns['propn'])
     for sentence in conllu:
         vrtfile.write("<s>\n")
-        for token in sentence: 
+        vrtfile.write("# sent_id = "+sentence.id+"\n")
+        if sentence.text != None:
+            sentenceconll = sentence.text.replace('>','-').replace('<','-')
+            vrtfile.write("# text = "+sentenceconll+"\n")
+        else:
+            vrtfile.write("# text = "+""+"\n")
+        for token in sentence:
             if args.annotation:
                 if token.form in columns['propn']: 
                     print("Annotating "+token.form)
                     token.misc['Reference'] = set()
-                    token.misc['Reference'].add('Human')                    
-            vrtfile.write(token.conll()+"\n")
+                    token.misc['Reference'].add('Human')
+            conll = token.conll().replace('>','-').replace('<','-')
+            vrtfile.write(conll+"\n")
         vrtfile.write("</s>\n")
-    vrtfile.write("</text>")
+    vrtfile.write("</text>\n")
+    vrtfile.write("\n")
+
     '''Close file'''
     vrtfile.close()
 

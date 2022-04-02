@@ -66,22 +66,32 @@ def main():
     file_content = open(args.filename, encoding='utf-8').read()
     
     '''Extract metadata'''
-    header = re.findall(r'^@.*',file_content)
-    '''Save metadata'''
+    header = re.findall(r'@.*',file_content)
+    try:
+        header.remove('@endheader')
+    except:
+        pass
     metadata= open(args.metadata+Path(args.filename).stem+".metadata","w+")
-    lang=Path(args.filename).stem.split("_")[1]
-    title=Path(args.filename).stem.split("_")[0]
-    metadata.write("<text id=\""+title+"\" ")
-    metadata.write("origtitle=\""+title+"\" language=\""+lang+"\" ")
-    '''Format and print header'''
-    for feature in header:
-        if feature != '@endheader':
+    if header: 
+        title=Path(args.filename).stem.split("_")[0]
+        metadata.write("<text id=\""+title+"\" ")
+        for feature in header:
             value = feature.split('=')
-            metadata.write(re.sub('^@','',value[0])+"=\""+value[1]+"\" ")
+            try:
+                metadata.write(re.sub('^@','',value[0].strip())+"=\""+value[1].strip()+"\" ")
+            except:
+                pass
+    else:
+        '''or extract metadata from filename...'''
+        lang=Path(args.filename).stem.split("_")[1]
+        title=Path(args.filename).stem.split("_")[0]
+        metadata.write("<text id=\""+title+"\" ")
+        metadata.write("origtitle=\""+title+"\" language=\""+lang+"\" ")
     metadata.write(">")
     metadata.close()
     '''Clean up nasty characters'''
-    output=sanitize(re.sub(r'(?m)^\@.*\n?',' ',file_content.replace('’', '\'').replace('‘', '\'')).replace('…',' ... ').replace('«',' " ').replace('»',' " ').replace('<BLOCK>',' ').replace('“',' " ').replace('„',' " ').replace('* * *',' . ').replace('‚','\''))
+    output=re.sub(r'(?m)^\@.*\n?',' ',file_content.replace('’', '\'').replace('‘', '\'')).replace('…',' ... ').replace('«',' " ').replace('»',' " ').replace('<BLOCK>',' ').replace('“',' " ').replace('„',' " ').replace('* * *',' . ').replace('‚','\'')
+    #output=sanitize(re.sub(r'(?m)^\@.*\n?',' ',file_content.replace('’', '\'').replace('‘', '\'')).replace('…',' ... ').replace('«',' " ').replace('»',' " ').replace('<BLOCK>',' ').replace('“',' " ').replace('„',' " ').replace('* * *',' . ').replace('‚','\''))
     print(output)
 
 def check_args(args):
