@@ -120,7 +120,9 @@ def doc2conllner(doc):
         sent_id = "# sent_id = "+NEWDOC+"-"+str(sentence._id)
         sent_conll = list()
         sent_conll.append(sent_id)
-        sent_conll.append("\n".join(sentence.comments))
+        if not sentence._comments:
+            sentence._comments = "# text = \"\""
+        sent_conll.append(sentence.comments)
         for token_dict in sentence.to_dict():
             token_conll = convert_token_dict_ner(token_dict)
             sent_conll.append("\t".join(token_conll))
