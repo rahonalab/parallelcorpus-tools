@@ -52,6 +52,7 @@ def build_parser():
     parser.add_argument('-s', '--source', required=True, help='Source for raw texts, must be dir/dir/dir')
     parser.add_argument('-t', '--target', required=True, help='Target destination for processed texts')
     parser.add_argument('-l', '--model', required=True, help='Specify language model e.g., en for English, zh for Chinese')
+    parser.add_argument('-p', '--processors', required=True, type=str, help='Specify NLP pipeline processors, e.g. tokenize,lemma,mwt,pos,depparse,ner')
     parser.add_argument('-m', '--metadata', required=True, help='path_to_metadata')
 
     return parser
@@ -163,11 +164,11 @@ def preparetext(file_content):
 
 def preparenlp(model):
     try: 
-        nlp = stanza.Pipeline(lang=model, logging_level="DEBUG")
+        nlp = stanza.Pipeline(lang=model, logging_level="DEBUG", processors=args.processors)
     except:
         print(model+" not found. I'll try to download it...")
         stanza.download(model)
-        nlp = stanza.Pipeline(lang=model, logging_level="DEBUG")
+        nlp = stanza.Pipeline(lang=model, logging_level="DEBUG", processors=args.processors)
     return nlp
 
 
