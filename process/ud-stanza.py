@@ -178,7 +178,7 @@ def udparser(nlp,text,filename):
     if stanza.__version__ <= "1.3.0":
         write_doc2conllner(doc,conllufile)
     else:
-        CoNLL.write_doc2collner(doc,conllufile)
+        CoNLL.write_doc2conll(doc,conllufile)
         
 
 
