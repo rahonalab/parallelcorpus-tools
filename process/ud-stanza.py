@@ -51,7 +51,7 @@ def build_parser():
 
     parser.add_argument('-s', '--source', required=True, help='Source for raw texts, must be dir/dir/dir')
     parser.add_argument('-t', '--target', required=True, help='Target destination for processed texts')
-    parser.add_argument('-l', '--model', required=True, help='Specify language model e.g., en for English, zh for Chinese')
+    parser.add_argument('-l', '--model', required=True, help='Specify language model e.g., en for English, zh for Chinese. Use mine for custom models.')
     parser.add_argument('-p', '--processors', required=True, type=str, help='Specify NLP pipeline processors, e.g. tokenize,lemma,mwt,pos,depparse,ner')
     parser.add_argument('-m', '--metadata', required=True, help='path_to_metadata')
 
@@ -163,12 +163,42 @@ def preparetext(file_content):
 
 
 def preparenlp(model):
-    try: 
-        nlp = stanza.Pipeline(lang=model, logging_level="DEBUG", processors=args.processors)
-    except:
-        print(model+" not found. I'll try to download it...")
-        stanza.download(model)
-        nlp = stanza.Pipeline(lang=model, logging_level="DEBUG", processors=args.processors)
+    if args.model == "mine": 
+            tokenize = input("Path to tokenize model: ")
+            mwt = input("Path to mwt model: ")
+            pos = input("Path to pos model: ")
+            lemma = input("Path to lemma model: ")
+            depparse = input("Path to depparse model: ")
+            if mwt:
+                config = {
+                        # Comma-separated list of processors to use
+	                    'processors': 'tokenize,mwt,pos,lemma,depparse',
+                        # Language code for the language to build the Pipeline in
+                        'lang': 'fr',
+                        # Processor-specific arguments are set with keys "{processor_name}_{argument_name}"
+                        # You only need model paths if you have a specific model outside of stanza_resources
+	                    'tokenize_model_path': tokenize,
+	                    'mwt_model_path': mwt,
+	                    'pos_model_path': pos,
+	                    'lemma_model_path': lemma,
+	                    'depparse_model_path': depparse,
+                        }
+            if mwt is not True:
+                config = {
+                        # Comma-separated list of processors to use
+	                    'processors': 'tokenize,pos,lemma,depparse',
+                        # Language code for the language to build the Pipeline in
+                        'lang': 'fr',
+                        # Processor-specific arguments are set with keys "{processor_name}_{argument_name}"
+                        # You only need model paths if you have a specific model outside of stanza_resources
+	                    'tokenize_model_path': tokenize,
+	                    'pos_model_path': pos,
+	                    'lemma_model_path': lemma,
+	                    'depparse_model_path': depparse,
+                        }
+                nlp = stanza.Pipeline(**config,logging_level="DEBUG") # Initialize the pipeline using a configuration dict
+    else: 
+          nlp = stanza.Pipeline(lang=model, logging_level="DEBUG", processors=args.processors)
     return nlp
 
 
