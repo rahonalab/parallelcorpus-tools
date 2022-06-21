@@ -89,7 +89,7 @@ def main():
             vrtfile.write("# text = "+sentenceconll+"\n")
         else:
             vrtfile.write("# text = "+""+"\n")
-        for token in sentence:
+        for token in sentence: 
             if args.annotation:
                 if token.form in columns['propn']: 
                     print("Annotating "+token.form)
